@@ -109,6 +109,9 @@ test.describe('E-Commerce Shopping Flow', () => {
         await expect(productsPage.viewCartModalButton).toBeVisible();
         await productsPage.viewCartModalButton.click();
 
+        // Wait until the cart items are loaded
+        await expect(cartPage.cartProductRows.first()).toBeVisible();
+
         // Delete the product and wait for the message
         await cartPage.removeProduct(0);
         await expect(cartPage.emptyCartMessage).toBeVisible();
@@ -177,7 +180,6 @@ test.describe('E-Commerce Shopping Flow', () => {
         await homePage.assertSubscriptionSuccess();
     });
 
-    // Not using authenticatedShopPage fixture
     test('TC-SHOP-010 - Session: authenticated user is redirected away from the login page @epic("Auth")', async ({ authenticatedShopPage, shopUser }) => {
         const homePage = new ShopHomePage(authenticatedShopPage);
         
