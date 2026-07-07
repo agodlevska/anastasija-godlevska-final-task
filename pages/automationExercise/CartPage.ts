@@ -24,4 +24,8 @@ export class CartPage extends BaseShopPage {
     async clickProceedToCheckout() {
         await this.proceedToCheckoutButton.click();
     }
+
+    async gotoCart() {
+        await this.page.goto('/view_cart');
+    }
 }

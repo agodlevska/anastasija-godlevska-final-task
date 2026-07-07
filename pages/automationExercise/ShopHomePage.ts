@@ -24,9 +24,6 @@ export class ShopHomePage extends BaseShopPage {
     }
 
     // Methods
-    async assertOnHomePage() {
-        await expect(this.page).toHaveURL('/');
-    }
 
     async clickSignupLogin() {
         await this.signupLoginLink.click();
@@ -43,5 +40,6 @@ export class ShopHomePage extends BaseShopPage {
 
     async assertSubscriptionSuccess() {
         await expect(this.successSubscribeMessage).toBeVisible();
+        await expect(this.successSubscribeMessage).toHaveText('You have been successfully subscribed!');
     }
 }

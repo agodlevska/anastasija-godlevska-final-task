@@ -53,13 +53,6 @@ export class AccountCreationPage extends BaseShopPage {
     }
 
     // Methods
-    async assertNavigatedOnPage() {
-        await this.page.waitForURL(/signup/);
-    }
-
-    async assertOnPage() {
-        await expect(this.createAccountButton).toBeVisible();
-    }
 
     async fillAccountDetails(user: ShopUser) {
         await this.titleRadioBtn.check();

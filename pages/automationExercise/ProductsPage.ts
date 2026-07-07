@@ -43,4 +43,21 @@ export class ProductsPage extends BaseShopPage {
     async clickViewProduct(index: number) {
         await this.page.locator('.choose > .nav > li > a').nth(index).click();
     }
+
+    async assertSearchResults(keyword: string) {
+        // The heading "Searched Products" is displayed
+        await expect(this.searchedProductsHeading).toBeVisible();
+
+        // At least one product result is shown
+        const count = await this.productCards.count();
+        expect(count).toBeGreaterThan(0);
+
+        // All visible product cards contain the keyword (case-insensitive) in their name
+        for (let i = 0; i < count; i++) {
+            const name = await this.productCards.nth(i).locator('p').first().textContent();
+            expect(name?.toLowerCase()).toContain(keyword.toLowerCase());
+        }
+    }
+
+
 }

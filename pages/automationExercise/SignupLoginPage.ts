@@ -21,7 +21,6 @@ export class SignupLoginPage extends BaseShopPage {
     }
 
     async goto() { await this.page.goto('/login'); }
-    async assertOnSignupLoginPage() { await expect(this.page).toHaveURL('/login'); }
     
     async startSignup(name: string, email: string) {
         await this.signupNameInput.fill(name);

@@ -43,8 +43,8 @@ test.describe('E-Commerce Shopping Flow', () => {
         // Add product to the cart
         await homePage.clickProducts();
         await productsPage.hoverAndAddToCart(0); 
-        await expect(productsPage.viewCartModalButton).toBeVisible(); // Smart wait
-        await productsPage.viewCartModalButton.click();
+        await expect(productsPage.viewCartModalButton).toBeVisible(); 
+        await cartPage.gotoCart();
 
         // Placing an order and payment
         await cartPage.clickProceedToCheckout();
@@ -65,17 +65,7 @@ test.describe('E-Commerce Shopping Flow', () => {
         await productsPage.gotoProducts();
         
         await productsPage.search('dress');
-
-        await expect(productsPage.searchedProductsHeading).toBeVisible();
-
-        const count = await productsPage.productCards.count();
-        expect(count).toBeGreaterThan(0);
-        
-        // Сheck that each product found contains the word "dress"
-        for (let i = 0; i < count; i++) {
-            const productName = await productsPage.productCards.nth(i).locator('p').first().textContent();
-            expect(productName?.toLowerCase()).toContain('dress');
-        }
+        await productsPage.assertSearchResults('dress');
     });
 
     test('TC-SHOP-003 - Cart: adding multiple products updates the item count @epic("Shopping") @feature("Cart")', async ({ page }) => {
@@ -125,12 +115,13 @@ test.describe('E-Commerce Shopping Flow', () => {
         await productsPage.clickViewProduct(0);
 
         // Check that all elements on the product page are displayed
+        await expect(detailPage.productName).toBeVisible();
         await expect(detailPage.productName).not.toBeEmpty();
-        await expect(detailPage.productCategory).toBeVisible();
-        await expect(detailPage.productPrice).toBeVisible();
-        await expect(detailPage.productAvailability).toBeVisible();
-        await expect(detailPage.productCondition).toBeVisible();
-        await expect(detailPage.productBrand).toBeVisible();
+        await expect(detailPage.productCategory).not.toBeEmpty();
+        await expect(detailPage.productPrice).not.toBeEmpty();
+        await expect(detailPage.productAvailability).not.toBeEmpty();
+        await expect(detailPage.productCondition).not.toBeEmpty();
+        await expect(detailPage.productBrand).not.toBeEmpty();
         await expect(detailPage.addToCartButton).toBeVisible();
     });
 
@@ -141,12 +132,21 @@ test.describe('E-Commerce Shopping Flow', () => {
         const data = await apiClient.getProducts();
 
         expect(data.responseCode).toBe(200);
+        // products is an array with at least one element
+        expect(Array.isArray(data.products)).toBe(true);
         expect(data.products.length).toBeGreaterThan(0);
-        
-        const firstProduct = data.products[0];
-        expect(firstProduct).toHaveProperty('id');
-        expect(firstProduct).toHaveProperty('name');
-        expect(firstProduct).toHaveProperty('price');
+         // Each product has id, name, price, brand, category
+         const ids = new Set();
+         for (const product of data.products) {
+             expect(product).toHaveProperty('id');
+             expect(product).toHaveProperty('name');
+             expect(product).toHaveProperty('price');
+             expect(product).toHaveProperty('brand');
+             expect(product).toHaveProperty('category');
+             ids.add(product.id);
+         }
+         // All id values are unique
+         expect(ids.size).toBe(data.products.length);
     });
 
     test('TC-SHOP-007 - API: POST /searchProduct returns matching results @epic("API")', async ({ request }) => {
